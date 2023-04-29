@@ -32,6 +32,8 @@
       {
         "allow": ["_id"]
       }
-    ]
+    ],
+    "no-console": "off",
+    "no-trailing-spaces": "off"
   }
 }
