@@ -1,21 +1,17 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, Document } from 'mongoose';
+import checkStringLength from '../utils/string-length';
+import regUrl from '../utils/constant';
 
-export interface IUser {
+export interface IUser extends Document {
   name: string;
   about: string;
   avatar: string;
 }
 
-const regUrl = /https?:\/\/.*\.(jpg|jpeg|png|gif))/i;
-
-function checkStringLength(v: string, min: number, max: number): boolean {
-  return v.replaceAll(' ', '').length > min && v.length < max;
-}
-
 const userSchema = new Schema<IUser>({
   name: {
     type: String,
-    unique: true,
+    unique: true, 
     required: true,
     validate: {
       validator: (v: string) => checkStringLength(v, 2, 30),
@@ -35,9 +31,9 @@ const userSchema = new Schema<IUser>({
     required: true,
     validate: {
       validator: (v: string) => regUrl.test(v),
-      message: 'Информация о пользователе должна быть от 2 до 200 символов',
+      message: 'Некорректная ссылка на аватар',
     },
   },
 });
 
-export default model<IUser>('User', userSchema);
+export default model<IUser>('user', userSchema);
