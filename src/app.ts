@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import router from './routes/index';
 
 const server = '127.0.0.1:27017'; // REPLACE WITH YOUR OWN SERVER
 const database = 'mestodb'; // REPLACE WITH YOUR OWN DB NAME
@@ -7,6 +8,7 @@ const database = 'mestodb'; // REPLACE WITH YOUR OWN DB NAME
 const { PORT = 3000 } = process.env;
 const app = express();
 app.use(express.json());
+app.use('/', router);
 
 const connectDB = async () => {
   try {
