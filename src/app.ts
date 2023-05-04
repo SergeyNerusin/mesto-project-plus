@@ -17,13 +17,13 @@ app.use('/', router);
 const connectDB = async () => {
   try {
     await mongoose.connect(`mongodb://${server}/${database}`);
-    console.log('MongoDB connected!!');
+    console.log('MongoDB connected!');
 
     app.listen(PORT, () => {
       console.log(`App listening on port ${PORT}`);
     });
   } catch (err) {
-    console.log('Failed to connect to MongoDB', err);
+    console.log(err);
   }
 };
 

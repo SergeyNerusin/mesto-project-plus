@@ -1,18 +1,19 @@
 import express from 'express';
 import {
   getUsers,
+  getUserById,
   createUser,
   updateAboutMe,
+  updateAvatar,
 } from '../controllers/user-controller';
 
 const route = express.Router();
 
 route.get('/', getUsers);
-route.get('/:_id', getUsers);
+route.get('/:_id', getUserById);
 route.post('/', createUser);
-route.post('/:_id', createUser);
 route.patch('/me', updateAboutMe);
-route.patch('/me/avatar', updateAboutMe);
+route.patch('/me/avatar', updateAvatar);
 
 export default route;
 

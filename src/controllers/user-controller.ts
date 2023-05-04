@@ -4,66 +4,90 @@ import Users from '../models/user';
 import AppError from '../errors/custom-errors';
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
-  console.log('req.params', req.params);
-  const { _id } = req.params;
-  if (!_id) {
-    try {
-      const users = await Users.find({});
-      return res.send({ data: users });
-    } catch (err) {
-      next(AppError.serverError('Server error'));
-    }
+  try {
+    const users = await Users.find({});
+    return res.send({ data: users });
+  } catch (err) {
+    next(AppError.serverError('Server error'));
   }
-  // find user by user id if url request have user id
+};
+
+const getUserById = async (req: Request, res: Response, next: NextFunction) => {
+  const { _id } = req.params;
   try {
     const user = await Users.findById(_id);
     if (!user) {
-      return next(AppError.notFound('User not found'));
+      return next(AppError.unathorized('User not found'));
     }
     return res.send({ data: user });
-  } catch (err) {
-    return res.status(401).send({ massage: err });
+  } catch {
+    next(AppError.serverError('Server error'));
   }
 };
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar } = req.body;
   try {
+    if (!name || !about || !avatar) {
+      return next(AppError.badRequest('Incorrect data'));
+    }
     const user = await Users.create({ name, about, avatar });
     return res.send({ data: user });
-  } catch (err) {
-    return res.status(400).send({ message: err });
+  } catch {
+    next(AppError.serverError('Server error'));
   }
 };
 
-const updateAboutMe = async (req: ITestRequest, res: Response) => {
-  const path = req.originalUrl;
+const updateAboutMe = async (
+  req: ITestRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   const _id = req.user?._id;
-  if (path === '/users/me') {
-    try {
-      const { name, about } = req.body;
-      const user = await Users.findByIdAndUpdate(
-        _id,
-        { name, about },
-        { new: true, runValidators: true },
-      );
-      return res.send({ data: user });
-    } catch (err) {
-      return res.send({ messsage: err });
-    }
-  }
-
+  const { name, about } = req.body;
   try {
-    const { avatar } = req.body;
+    if (!name || !about) {
+      return next(AppError.badRequest('Incorrect profile data'));
+    }
+    const user = await Users.findByIdAndUpdate(
+      _id,
+      { name, about },
+      { new: true, runValidators: true },
+    );
+    if (!user) {
+      return next(AppError.unathorized('User not found'));
+    }
+    return res.send({ data: user });
+  } catch {
+    next(AppError.serverError('Server error'));
+  }
+};
+
+const updateAvatar = async (
+  req: ITestRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { avatar } = req.body;
+  const _id = req.user?._id;
+  try {
+    if (!avatar) {
+      return next(AppError.badRequest('Invalid avatar link'));
+    }
     const user = await Users.findByIdAndUpdate(
       _id,
       { avatar },
       { new: true, runValidators: true },
     );
+    if (!user) {
+      return next(AppError.unathorized('User not found'));
+    }
     return res.send({ data: user });
-  } catch (err) {
-    return res.send({ message: err });
+  } catch {
+    next(AppError.serverError('Server error'));
   }
 };
 
-export { getUsers, createUser, updateAboutMe };
+export {
+  getUsers, getUserById, createUser, updateAboutMe, updateAvatar, 
+};

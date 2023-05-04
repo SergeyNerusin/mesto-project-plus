@@ -1,21 +1,26 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ITestRequest } from '../middleware/middleware';
 import Cards from '../models/card';
 import AppError from '../errors/custom-errors';
 
-const getCards = (req: Request, res: Response) => Cards.find({})
+const getCards = (req: Request, res: Response, next: NextFunction) => Cards.find({})
   .then((cards) => res.send({ data: cards }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .catch(() => next(AppError.serverError('Server error')));
 
-const createCard = (req: ITestRequest, res: Response) => {
+const createCard = (req: ITestRequest, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
   const owner = req.user?._id;
+  if (!name || !link) {
+    throw AppError.badRequest('Incorrect data');
+  }
   return Cards.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => {
+      res.send({ data: card });
+    })
+    .catch(() => next(AppError.serverError('Server error')));
 };
 
-const putLikeCard = (req: ITestRequest, res: Response) => {
+const putLikeCard = (req: ITestRequest, res: Response, next: NextFunction) => {
   const _id = req.user?._id;
   const { cardId } = req.params;
   return Cards.findByIdAndUpdate(
@@ -26,11 +31,20 @@ const putLikeCard = (req: ITestRequest, res: Response) => {
       runValidators: true,
     },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => {
+      if (!card) {
+        throw AppError.badRequest('Incorrect cardId');
+      }
+      return res.send({ data: card });
+    })
+    .catch(() => next(AppError.serverError('Server error')));
 };
 
-const deleteLikeCard = (req: ITestRequest, res: Response) => {
+const deleteLikeCard = (
+  req: ITestRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   const _id = req.user?._id;
   const { cardId } = req.params;
   return Cards.findByIdAndUpdate(
@@ -41,15 +55,25 @@ const deleteLikeCard = (req: ITestRequest, res: Response) => {
       runValidators: true,
     },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => {
+      if (!card) {
+        throw AppError.badRequest('Incorrect cardId');
+      }
+      return res.send({ data: card });
+    })
+    .catch(() => next(AppError.serverError('Server error')));
 };
 
-const deleteCard = (req: ITestRequest, res: Response) => {
+const deleteCard = (req: ITestRequest, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
   return Cards.findByIdAndDelete(cardId)
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => {
+      if (!card) {
+        throw AppError.badRequest('Incorrect cardId');
+      }
+      return res.send({ data: card });
+    })
+    .catch(() => next(AppError.serverError('Server error')));
 };
 
 export {
