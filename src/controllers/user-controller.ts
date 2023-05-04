@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ITestRequest } from '../middleware/middleware';
 import Users from '../models/user';
+import AppError from '../errors/custom-errors';
 
-const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   console.log('req.params', req.params);
   const { _id } = req.params;
   if (!_id) {
@@ -10,11 +11,15 @@ const getUsers = async (req: Request, res: Response) => {
       const users = await Users.find({});
       return res.send({ data: users });
     } catch (err) {
-      return res.status(500).send({ message: err });
+      next(AppError.serverError('Server error'));
     }
   }
+  // find user by user id if url request have user id
   try {
     const user = await Users.findById(_id);
+    if (!user) {
+      return next(AppError.notFound('User not found'));
+    }
     return res.send({ data: user });
   } catch (err) {
     return res.status(401).send({ massage: err });

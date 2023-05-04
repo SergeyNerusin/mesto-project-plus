@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ITestRequest } from '../middleware/middleware';
 import Cards from '../models/card';
+import AppError from '../errors/custom-errors';
 
 const getCards = (req: Request, res: Response) => Cards.find({})
   .then((cards) => res.send({ data: cards }))
