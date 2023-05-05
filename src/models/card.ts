@@ -1,8 +1,5 @@
 import {
-  model,
-  Schema,
-  Types,
-  Document,
+  model, Schema, Types, Document, 
 } from 'mongoose';
 import checkStringLength from '../utils/string-length';
 import regUrl from '../utils/constant';
@@ -12,13 +9,12 @@ export interface ICard extends Document {
   link: string;
   owner: Schema.Types.ObjectId;
   likes: [Types.ObjectId];
-  createdAt: Date
+  createdAt: Date;
 }
 
 const cardSchema = new Schema<ICard>({
   name: {
     type: String,
-    unique: true,
     required: true,
     validate: {
       validator: (v: string) => checkStringLength(v, 2, 30),
@@ -40,6 +36,7 @@ const cardSchema = new Schema<ICard>({
   },
   likes: {
     type: [Types.ObjectId],
+    ref: 'user',
     default: [],
     required: true,
   },
