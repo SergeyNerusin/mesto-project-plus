@@ -10,9 +10,6 @@ const getCards = (req: Request, res: Response, next: NextFunction) => Cards.find
 const createCard = (req: ITestRequest, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
   const owner = req.user?._id;
-  if (!name || !link) {
-    throw AppError.badRequest('Incorrect data');
-  }
   return Cards.create({ name, link, owner })
     .then((card) => {
       res.send({ data: card });
@@ -39,7 +36,12 @@ const putLikeCard = (req: ITestRequest, res: Response, next: NextFunction) => {
       }
       return res.send({ data: card });
     })
-    .catch(() => next(AppError.badRequest('Incorrect cardId')));
+    .catch((err) => {
+      if (err instanceof Error) {
+        return next(AppError.badRequest('Incorrect data'));
+      }
+      return next(AppError.serverError('Server error'));
+    });
 };
 
 const deleteLikeCard = (
@@ -60,7 +62,12 @@ const deleteLikeCard = (
       }
       return res.send({ data: card });
     })
-    .catch(() => next(AppError.badRequest('Incorrect cardId')));
+    .catch((err) => {
+      if (err instanceof Error) {
+        return next(AppError.badRequest('Incorrect data'));
+      }
+      return next(AppError.serverError('Server error'));
+    });
 };
 
 const deleteCard = (req: ITestRequest, res: Response, next: NextFunction) => {
@@ -72,7 +79,12 @@ const deleteCard = (req: ITestRequest, res: Response, next: NextFunction) => {
       }
       return res.send({ data: card });
     })
-    .catch(() => next(AppError.badRequest('Incorrect cardId')));
+    .catch((err) => {
+      if (err instanceof Error) {
+        return next(AppError.badRequest('Incorrect data'));
+      }
+      return next(AppError.serverError('Server error'));
+    });
 };
 
 export {

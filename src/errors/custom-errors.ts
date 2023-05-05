@@ -4,7 +4,6 @@ class AppError extends Error {
   constructor(code: number, message: string) {
     super(message);
     this.statusCode = code;
-    this.message = message;
   }
 
   static badRequest(message: string) {

@@ -20,7 +20,10 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
       return next(AppError.notFound('User not found'));
     }
     return res.send({ data: user });
-  } catch {
+  } catch (err) {
+    if (err instanceof Error) {
+      return next(AppError.badRequest('Incorrect data'));
+    }
     next(AppError.serverError('Server error'));
   }
 };
@@ -28,9 +31,6 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, about, avatar } = req.body;
   try {
-    if (!name || !about || !avatar) {
-      return next(AppError.badRequest('Incorrect data'));
-    }
     const user = await Users.create({ name, about, avatar });
     return res.send({ data: user });
   } catch (err) {
@@ -49,9 +49,6 @@ const updateAboutMe = async (
   const _id = req.user?._id;
   const { name, about } = req.body;
   try {
-    if (!name || !about) {
-      return next(AppError.badRequest('Incorrect profile data'));
-    }
     const user = await Users.findByIdAndUpdate(
       _id,
       { name, about },

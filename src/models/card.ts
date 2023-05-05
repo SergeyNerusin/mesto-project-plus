@@ -1,7 +1,6 @@
 import {
   model, Schema, Types, Document, 
 } from 'mongoose';
-import checkStringLength from '../utils/string-length';
 import regUrl from '../utils/constant';
 
 export interface ICard extends Document {
@@ -16,17 +15,16 @@ const cardSchema = new Schema<ICard>({
   name: {
     type: String,
     required: true,
-    validate: {
-      validator: (v: string) => checkStringLength(v, 2, 30),
-      message: 'Имя должно быть от 2 до 30 символов',
-    },
+    trim: true,
+    minlength: 2,
+    maxlength: 30,
   },
   link: {
     type: String,
     required: true,
     validate: {
       validator: (v: string) => regUrl.test(v),
-      message: 'Некорректная ссылка на фото',
+      message: 'Incorrect foto link',
     },
   },
   owner: {
