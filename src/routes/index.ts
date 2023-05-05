@@ -9,6 +9,9 @@ const router = Router();
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
-router.use((req: Request, res: Response, next: NextFunction) => next(AppError.notFound('Resourse is not found')));
+router.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
+  res.status(err.statusCode).send({ message: err.message });
+  next();
+});
 
 export default router;
