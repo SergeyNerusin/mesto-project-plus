@@ -17,7 +17,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await Users.findById(_id);
     if (!user) {
-      return next(AppError.unathorized('User not found'));
+      return next(AppError.notFound('User not found'));
     }
     return res.send({ data: user });
   } catch {
@@ -33,7 +33,10 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     }
     const user = await Users.create({ name, about, avatar });
     return res.send({ data: user });
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === 'ValidationError') {
+      return next(AppError.badRequest('Incorrect data'));
+    }
     next(AppError.serverError('Server error'));
   }
 };
@@ -55,10 +58,13 @@ const updateAboutMe = async (
       { new: true, runValidators: true },
     );
     if (!user) {
-      return next(AppError.unathorized('User not found'));
+      return next(AppError.notFound('User not found'));
     }
     return res.send({ data: user });
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === 'ValidationError') {
+      return next(AppError.badRequest('Incorrect data'));
+    }
     next(AppError.serverError('Server error'));
   }
 };
@@ -80,10 +86,13 @@ const updateAvatar = async (
       { new: true, runValidators: true },
     );
     if (!user) {
-      return next(AppError.unathorized('User not found'));
+      return next(AppError.notFound('User not found'));
     }
     return res.send({ data: user });
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.name === 'ValidationError') {
+      return next(AppError.badRequest('Incorrect data'));
+    }
     next(AppError.serverError('Server error'));
   }
 };
