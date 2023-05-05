@@ -1,4 +1,4 @@
 function checkStringLength(v: string, min: number, max: number): boolean {
-  return v.replaceAll(' ', '').length > min && v.length < max;
+  return v.trim().length >= min && v.trim().length <= max;
 }
 export default checkStringLength;
