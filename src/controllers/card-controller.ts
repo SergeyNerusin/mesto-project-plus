@@ -37,7 +37,7 @@ const putLikeCard = (req: ITestRequest, res: Response, next: NextFunction) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof Error) {
+      if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
       return next(AppError.serverError('Server error'));
@@ -63,7 +63,7 @@ const deleteLikeCard = (
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof Error) {
+      if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
       return next(AppError.serverError('Server error'));
@@ -80,7 +80,7 @@ const deleteCard = (req: ITestRequest, res: Response, next: NextFunction) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof Error) {
+      if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
       return next(AppError.serverError('Server error'));

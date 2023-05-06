@@ -7,7 +7,7 @@ export interface ICard extends Document {
   name: string;
   link: string;
   owner: Schema.Types.ObjectId;
-  likes: [Types.ObjectId];
+  likes: Array<Types.ObjectId>;
   createdAt: Date;
 }
 
