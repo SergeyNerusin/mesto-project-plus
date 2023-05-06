@@ -21,7 +21,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     }
     return res.send({ data: user });
   } catch (err) {
-    if (err instanceof Error) {
+    if (err instanceof Error && err.name === 'CastError') {
       return next(AppError.badRequest('Incorrect data'));
     }
     next(AppError.serverError('Server error'));
