@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { ITestRequest } from '../middleware/middleware';
 import Users from '../models/user';
 import AppError from '../errors/custom-errors';
+import myKey from '../utils/user-key';
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,10 +32,31 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  const { name, about, avatar } = req.body;
+  const {
+    email, password, name, about, avatar, 
+  } = req.body;
+
   try {
-    const user = await Users.create({ name, about, avatar });
-    return res.send({ data: user });
+    const existEmail = await Users.find({ email });
+    if (existEmail) {
+      return next(AppError.conflict('User with this email already exists'));
+    }
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = await Users.create({
+      email,
+      password: hashPassword,
+      name,
+      about,
+      avatar,
+    });
+    return res.send({
+      data: {
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+      },
+    });
   } catch (err) {
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
@@ -94,6 +118,26 @@ const updateAvatar = async (
   }
 };
 
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  try {
+    const user = await Users.findUserByCredentials(email, password);
+    const token = jwt.sign(
+      { _id: user._id },
+      (process.env.CRYPTO_KEY as string) || myKey,
+      { expiresIn: '7d' },
+    );
+    return res.send({ token });
+  } catch {
+    next(AppError.unathorized('Authentication error'));
+  }
+};
+
 export {
-  getUsers, getUserById, createUser, updateAboutMe, updateAvatar, 
+  login,
+  getUsers,
+  getUserById,
+  createUser,
+  updateAboutMe,
+  updateAvatar,
 };
