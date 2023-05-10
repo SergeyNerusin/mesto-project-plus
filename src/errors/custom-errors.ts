@@ -18,6 +18,10 @@ class AppError extends Error {
     return new AppError(404, message);
   }
 
+  static conflict(message: string) {
+    return new AppError(409, message);
+  }
+
   static serverError(message: string) {
     return new AppError(500, message);
   }
