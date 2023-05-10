@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import router from './routes/index';
 import { testMidllware } from './middleware/middleware';
 
+require('dotenv').config();
+
 const server = '127.0.0.1:27017'; // REPLACE WITH YOUR OWN SERVER
 const database = 'mestodb'; // REPLACE WITH YOUR OWN DB NAME
 
