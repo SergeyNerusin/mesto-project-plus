@@ -1,24 +1,29 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import router from './routes/index';
-import { testMidllware } from './middleware/middleware';
+import { login, createUser } from './controllers/user-controller';
+import auth from './middleware/auth';
 
 require('dotenv').config();
 
-const server = '127.0.0.1:27017'; // REPLACE WITH YOUR OWN SERVER
-const database = 'mestodb'; // REPLACE WITH YOUR OWN DB NAME
+const {
+  PORT = 3000,
+  SERVER_DB = '127.0.0.1:27017',
+  DATABASE = 'mestodb',
+} = process.env;
 
-const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(express.json());
 
-app.use(testMidllware);
+app.post('/signin', login);
+app.post('/signup', createUser);
+app.use(auth);
 app.use('/', router);
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(`mongodb://${server}/${database}`);
+    await mongoose.connect(`mongodb://${SERVER_DB}/${DATABASE}`);
     console.log('MongoDB connected!');
 
     app.listen(PORT, () => {
