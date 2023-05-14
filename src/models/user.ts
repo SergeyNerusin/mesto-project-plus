@@ -30,14 +30,13 @@ const userSchema = new Schema<IUser, UserModel>({
     required: [true, 'e-mail is required'],
     validate: {
       validator: (v: string) => validator.isEmail(v),
-      message: 'Неправильный формат почты',
+      message: 'Invalid email address format',
     },
   },
   password: {
     type: String,
     required: [true, 'password is required'],
     select: false,
-    minlength: 8,
   },
   name: {
     type: String,

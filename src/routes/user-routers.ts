@@ -2,7 +2,7 @@ import express from 'express';
 import {
   getUsers,
   getUserById,
-  createUser,
+  getCurrentUser,
   updateAboutMe,
   updateAvatar,
 } from '../controllers/user-controller';
@@ -11,7 +11,7 @@ const route = express.Router();
 
 route.get('/', getUsers);
 route.get('/:_id', getUserById);
-route.post('/', createUser);
+route.get('/me', getCurrentUser);
 route.patch('/me', updateAboutMe);
 route.patch('/me/avatar', updateAvatar);
 

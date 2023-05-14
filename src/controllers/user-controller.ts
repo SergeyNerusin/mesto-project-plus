@@ -37,7 +37,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   } = req.body;
 
   try {
-    const existEmail = await Users.find({ email });
+    const existEmail = await Users.findOne({ email });
     if (existEmail) {
       return next(AppError.conflict('User with this email already exists'));
     }
@@ -61,6 +61,23 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
+    next(AppError.serverError('Server error'));
+  }
+};
+
+const getCurrentUser = async (
+  req: ITestRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  const _id = req.user?._id;
+  try {
+    const currentUser = await Users.findById({ _id });
+    if (!currentUser) {
+      return next(AppError.unathorized('Authentication error'));
+    }
+    return res.send({ data: currentUser });
+  } catch {
     next(AppError.serverError('Server error'));
   }
 };
@@ -137,6 +154,7 @@ export {
   login,
   getUsers,
   getUserById,
+  getCurrentUser,
   createUser,
   updateAboutMe,
   updateAvatar,
