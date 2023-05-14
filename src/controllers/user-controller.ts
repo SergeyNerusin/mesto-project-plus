@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { ITestRequest } from '../middleware/middleware';
+import { IUserRequest } from '../utils/type-user-request';
 import Users from '../models/user';
 import AppError from '../errors/custom-errors';
 import myKey from '../utils/user-key';
@@ -66,7 +66,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getCurrentUser = async (
-  req: ITestRequest,
+  req: IUserRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -83,7 +83,7 @@ const getCurrentUser = async (
 };
 
 const updateAboutMe = async (
-  req: ITestRequest,
+  req: IUserRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -108,7 +108,7 @@ const updateAboutMe = async (
 };
 
 const updateAvatar = async (
-  req: ITestRequest,
+  req: IUserRequest,
   res: Response,
   next: NextFunction,
 ) => {

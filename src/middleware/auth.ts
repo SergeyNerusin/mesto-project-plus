@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import myKey from '../utils/user-key';
 import AppError from '../errors/custom-errors';
 
-interface IAuthRequest extends Request {
+export interface IAuthRequest extends Request {
   user?: string | JwtPayload;
 }
 

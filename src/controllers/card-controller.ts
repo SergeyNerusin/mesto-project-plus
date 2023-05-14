@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ITestRequest } from '../middleware/middleware';
+import { IUserRequest } from '../utils/type-user-request';
 import Cards from '../models/card';
 import AppError from '../errors/custom-errors';
 
@@ -7,7 +7,7 @@ const getCards = (req: Request, res: Response, next: NextFunction) => Cards.find
   .then((cards) => res.send({ data: cards }))
   .catch(() => next(AppError.serverError('Server error')));
 
-const createCard = (req: ITestRequest, res: Response, next: NextFunction) => {
+const createCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
   const owner = req.user?._id;
   return Cards.create({ name, link, owner })
@@ -22,7 +22,7 @@ const createCard = (req: ITestRequest, res: Response, next: NextFunction) => {
     });
 };
 
-const putLikeCard = (req: ITestRequest, res: Response, next: NextFunction) => {
+const putLikeCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const _id = req.user?._id;
   const { cardId } = req.params;
   return Cards.findByIdAndUpdate(
@@ -45,7 +45,7 @@ const putLikeCard = (req: ITestRequest, res: Response, next: NextFunction) => {
 };
 
 const deleteLikeCard = (
-  req: ITestRequest,
+  req: IUserRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -70,7 +70,7 @@ const deleteLikeCard = (
     });
 };
 
-const deleteCard = (req: ITestRequest, res: Response, next: NextFunction) => {
+const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
   return Cards.findByIdAndDelete(cardId)
     .then((card) => {
