@@ -72,12 +72,20 @@ const deleteLikeCard = (
 
 const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
-  return Cards.findByIdAndDelete(cardId)
-    .then((card) => {
-      if (!card) {
+  const owner = req.user?._id;
+  Cards.findById(cardId)
+    .then((cardDelete) => {
+      if (!cardDelete) {
         throw AppError.notFound('Card not found');
       }
-      return res.send({ data: card });
+      if (cardDelete.owner.toString() === owner) {
+        return Cards.findByIdAndDelete(cardId)
+          .then((card) => res.send({ data: card }))
+          .catch(() => next(AppError.serverError('Server error')));
+      }
+      return next(
+        AppError.unathorized('You do not have the right to delete card'),
+      );
     })
     .catch((err) => {
       if (err instanceof Error && err.name === 'CastError') {
