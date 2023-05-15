@@ -5,7 +5,7 @@ import AppError from '../errors/custom-errors';
 
 const getCards = (req: Request, res: Response, next: NextFunction) => Cards.find({})
   .then((cards) => res.send({ data: cards }))
-  .catch(() => next(AppError.serverError('Server error')));
+  .catch((err) => next(err));
 
 const createCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
@@ -18,7 +18,7 @@ const createCard = (req: IUserRequest, res: Response, next: NextFunction) => {
       if (err instanceof Error && err.name === 'ValidationError') {
         return next(AppError.badRequest('Incorrect data'));
       }
-      return next(AppError.serverError('Server error'));
+      return next(err);
     });
 };
 
@@ -40,7 +40,7 @@ const putLikeCard = (req: IUserRequest, res: Response, next: NextFunction) => {
       if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
-      return next(AppError.serverError('Server error'));
+      return next(err);
     });
 };
 
@@ -66,7 +66,7 @@ const deleteLikeCard = (
       if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
-      return next(AppError.serverError('Server error'));
+      return next(err);
     });
 };
 
@@ -81,7 +81,7 @@ const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
       if (cardDelete.owner.toString() === owner) {
         return Cards.findByIdAndDelete(cardId)
           .then((card) => res.send({ data: card }))
-          .catch(() => next(AppError.serverError('Server error')));
+          .catch((err) => next(err));
       }
       return next(
         AppError.unathorized('You do not have the right to delete card'),
@@ -91,7 +91,7 @@ const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
       if (err instanceof Error && err.name === 'CastError') {
         return next(AppError.badRequest('Incorrect data'));
       }
-      return next(AppError.serverError('Server error'));
+      return next(err);
     });
 };
 

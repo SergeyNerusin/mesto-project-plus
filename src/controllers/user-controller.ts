@@ -11,7 +11,7 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const users = await Users.find({});
     return res.send({ data: users });
   } catch (err) {
-    next(AppError.serverError('Server error'));
+    next(err);
   }
 };
 
@@ -27,7 +27,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     if (err instanceof Error && err.name === 'CastError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(AppError.serverError('Server error'));
+    next(err);
   }
 };
 
@@ -61,7 +61,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(AppError.serverError('Server error'));
+    next(err);
   }
 };
 
@@ -77,8 +77,8 @@ const getCurrentUser = async (
       return next(AppError.unathorized('Authentication error'));
     }
     return res.send({ data: currentUser });
-  } catch {
-    next(AppError.serverError('Server error'));
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -103,7 +103,7 @@ const updateAboutMe = async (
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(AppError.serverError('Server error'));
+    next(err);
   }
 };
 
@@ -131,7 +131,7 @@ const updateAvatar = async (
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(AppError.serverError('Server error'));
+    next(err);
   }
 };
 
