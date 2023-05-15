@@ -4,6 +4,7 @@ import router from './routes/index';
 import { login, createUser } from './controllers/user-controller';
 import auth from './middleware/auth';
 import centralErrorHandling from './middleware/error-handling';
+import { requestLogger, errorLogger } from './middleware/loggers';
 
 require('dotenv').config();
 
@@ -17,10 +18,14 @@ const app = express();
 
 app.use(express.json());
 
+app.use(requestLogger); // файл request.log
+
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use(auth);
 app.use('/', router);
+
+app.use(errorLogger); // файл error.log
 
 app.use(centralErrorHandling);
 
