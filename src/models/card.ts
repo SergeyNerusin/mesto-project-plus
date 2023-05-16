@@ -1,7 +1,7 @@
 import {
   model, Schema, Types, Document, 
 } from 'mongoose';
-import regUrl from '../utils/constant';
+import { regExpUrlPicture } from '../utils/constant';
 
 export interface ICard extends Document {
   name: string;
@@ -23,7 +23,7 @@ const cardSchema = new Schema<ICard>({
     type: String,
     required: true,
     validate: {
-      validator: (v: string) => regUrl.test(v),
+      validator: (v: string) => regExpUrlPicture.test(v),
       message: 'Incorrect foto link',
     },
   },

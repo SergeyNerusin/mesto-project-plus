@@ -4,7 +4,7 @@ import {
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import AppError from '../errors/custom-errors';
-import regUrl from '../utils/constant';
+import { regExpUrlPicture } from '../utils/constant';
 
 export interface IUser extends Document {
   email: string;
@@ -56,7 +56,7 @@ const userSchema = new Schema<IUser, UserModel>({
     type: String,
     required: true,
     validate: {
-      validator: (v: string) => regUrl.test(v),
+      validator: (v: string) => regExpUrlPicture.test(v),
       message: 'Incorrect avatar link',
     },
     default:
