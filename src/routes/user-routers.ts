@@ -2,18 +2,23 @@ import express from 'express';
 import {
   getUsers,
   getUserById,
-  createUser,
+  getCurrentUser,
   updateAboutMe,
   updateAvatar,
 } from '../controllers/user-controller';
+import {
+  idValidation,
+  aboutUserValidation,
+  avatarValidation,
+} from '../validation/user-validation';
 
 const route = express.Router();
 
 route.get('/', getUsers);
-route.get('/:_id', getUserById);
-route.post('/', createUser);
-route.patch('/me', updateAboutMe);
-route.patch('/me/avatar', updateAvatar);
+route.get('/:_id', idValidation, getUserById);
+route.get('/me', getCurrentUser);
+route.patch('/me', aboutUserValidation, updateAboutMe);
+route.patch('/me/avatar', avatarValidation, updateAvatar);
 
 export default route;
 
