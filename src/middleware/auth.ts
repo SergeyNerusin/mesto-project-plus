@@ -10,7 +10,7 @@ export interface IAuthRequest extends Request {
 export default (req: IAuthRequest, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return AppError.unathorized('Authorization required');
+    return next(AppError.unathorized('Authorization required'));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -19,7 +19,7 @@ export default (req: IAuthRequest, res: Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, process.env.CRYPTO_KEY || myKey);
   } catch {
-    return AppError.unathorized('Authorization required');
+    return next(AppError.unathorized('Authorization required'));
   }
 
   req.user = payload as { _id: JwtPayload }; // записываем пейлоуд в объект запроса
