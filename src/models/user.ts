@@ -1,5 +1,5 @@
 import {
-  model, Schema, Model, Document, 
+  model, Schema, Model, Document,
 } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
@@ -54,7 +54,6 @@ const userSchema = new Schema<IUser, UserModel>({
   },
   avatar: {
     type: String,
-    required: true,
     validate: {
       validator: (v: string) => regExpUrlPicture.test(v),
       message: 'Incorrect avatar link',

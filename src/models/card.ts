@@ -1,5 +1,5 @@
 import {
-  model, Schema, Types, Document, 
+  model, Schema, Types, Document,
 } from 'mongoose';
 import { regExpUrlPicture } from '../utils/constant';
 
@@ -36,7 +36,6 @@ const cardSchema = new Schema<ICard>({
     type: [Types.ObjectId],
     ref: 'user',
     default: [],
-    required: true,
   },
   createdAt: {
     type: Date,
