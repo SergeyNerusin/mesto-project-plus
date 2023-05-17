@@ -10,6 +10,6 @@ export const cardDataValidation = celebrate({
 
 export const idCardValidation = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24).required(),
+    cardId: Joi.string().hex().length(24).required(),
   }),
 });

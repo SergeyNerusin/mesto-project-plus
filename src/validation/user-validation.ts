@@ -20,7 +20,7 @@ export const userLoginValidation = celebrate({
 
 export const idValidation = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().alphanum().length(24).required(),
+    _id: Joi.string().hex().length(24).required(),
   }),
 });
 
