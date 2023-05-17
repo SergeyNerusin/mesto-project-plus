@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { IUserRequest } from '../utils/type-user-request';
 import Cards from '../models/card';
 import AppError from '../errors/custom-errors';
+import { STATUS_CREATED } from '../utils/constant';
 
 const getCards = (req: Request, res: Response, next: NextFunction) => Cards.find({})
   .then((cards) => res.send({ data: cards }))
@@ -12,7 +13,7 @@ const createCard = (req: IUserRequest, res: Response, next: NextFunction) => {
   const owner = req.user?._id;
   return Cards.create({ name, link, owner })
     .then((card) => {
-      res.send({ data: card });
+      res.status(STATUS_CREATED).send({ data: card });
     })
     .catch((err) => {
       if (err instanceof Error && err.name === 'ValidationError') {
@@ -78,14 +79,12 @@ const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
       if (!cardDelete) {
         throw AppError.notFound('Card not found');
       }
-      if (cardDelete.owner.toString() === owner) {
-        return Cards.findByIdAndDelete(cardId)
-          .then((card) => res.send({ data: card }))
-          .catch((err) => next(err));
+      if (cardDelete.owner.toString() !== owner) {
+        return next(
+          AppError.forbidden('You do not have the right to delete card'),
+        );
       }
-      return next(
-        AppError.unathorized('You do not have the right to delete card'),
-      );
+      return cardDelete.deleteOne().then(() => res.send({ data: cardDelete }));
     })
     .catch((err) => {
       if (err instanceof Error && err.name === 'CastError') {
@@ -96,5 +95,5 @@ const deleteCard = (req: IUserRequest, res: Response, next: NextFunction) => {
 };
 
 export {
-  getCards, putLikeCard, createCard, deleteLikeCard, deleteCard, 
+  getCards, putLikeCard, createCard, deleteLikeCard, deleteCard,
 };

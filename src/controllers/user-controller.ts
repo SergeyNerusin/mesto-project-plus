@@ -1,17 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Error } from 'mongoose';
 import { IUserRequest } from '../utils/type-user-request';
 import Users from '../models/user';
 import AppError from '../errors/custom-errors';
 import myKey from '../utils/user-key';
+import { STATUS_CREATED } from '../utils/constant';
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await Users.find({});
     return res.send({ data: users });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -27,20 +29,16 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     if (err instanceof Error && err.name === 'CastError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(err);
+    return next(err);
   }
 };
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const {
-    email, password, name, about, avatar, 
+    email, password, name, about, avatar,
   } = req.body;
 
   try {
-    const existEmail = await Users.findOne({ email });
-    if (existEmail) {
-      return next(AppError.conflict('User with this email already exists'));
-    }
     const hashPassword = await bcrypt.hash(password, 10);
     const user = await Users.create({
       email,
@@ -49,7 +47,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       about,
       avatar,
     });
-    return res.send({
+    return res.status(STATUS_CREATED).send({
       data: {
         email: user.email,
         name: user.name,
@@ -58,10 +56,13 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
   } catch (err) {
+    if (err instanceof Error && err.message.startsWith('E11000')) {
+      return next(AppError.conflict('User with this email already exists'));
+    }
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(err);
+    return next(err);
   }
 };
 
@@ -78,7 +79,7 @@ const getCurrentUser = async (
     }
     return res.send({ data: currentUser });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -103,7 +104,7 @@ const updateAboutMe = async (
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(err);
+    return next(err);
   }
 };
 
@@ -131,7 +132,7 @@ const updateAvatar = async (
     if (err instanceof Error && err.name === 'ValidationError') {
       return next(AppError.badRequest('Incorrect data'));
     }
-    next(err);
+    return next(err);
   }
 };
 
@@ -145,8 +146,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       { expiresIn: '7d' },
     );
     return res.send({ token });
-  } catch {
-    next(AppError.unathorized('Authentication error'));
+  } catch (err) {
+    return next(err);
   }
 };
 

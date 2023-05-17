@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction, 
+  Router, Request, Response, NextFunction,
 } from 'express';
 import userRouter from './user-routers';
 import cardRouter from './cards-routers';

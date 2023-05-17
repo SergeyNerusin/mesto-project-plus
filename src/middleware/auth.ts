@@ -24,5 +24,5 @@ export default (req: IAuthRequest, res: Response, next: NextFunction) => {
 
   req.user = payload as { _id: JwtPayload }; // записываем пейлоуд в объект запроса
 
-  next(); // пропускаем запрос дальше
+  return next(); // пропускаем запрос дальше
 };

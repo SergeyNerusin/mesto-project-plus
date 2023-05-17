@@ -14,6 +14,10 @@ class AppError extends Error {
     return new AppError(401, message);
   }
 
+  static forbidden(message: string) {
+    return new AppError(403, message);
+  }
+
   static notFound(message: string) {
     return new AppError(404, message);
   }
