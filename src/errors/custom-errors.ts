@@ -21,10 +21,6 @@ class AppError extends Error {
   static conflict(message: string) {
     return new AppError(409, message);
   }
-
-  static serverError(message: string) {
-    return new AppError(500, message);
-  }
 }
 
 export default AppError;
