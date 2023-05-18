@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import { MongoError } from 'mongodb';
+import { Error } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Error } from 'mongoose';
 import { IUserRequest } from '../utils/type-user-request';
 import Users from '../models/user';
 import AppError from '../errors/custom-errors';
@@ -56,7 +57,10 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
   } catch (err) {
-    if (err instanceof Error && err.message.startsWith('E11000')) {
+    if (
+      (err as MongoError) instanceof MongoError
+      && (err as MongoError).code === 11000
+    ) {
       return next(AppError.conflict('User with this email already exists'));
     }
     if (err instanceof Error && err.name === 'ValidationError') {
